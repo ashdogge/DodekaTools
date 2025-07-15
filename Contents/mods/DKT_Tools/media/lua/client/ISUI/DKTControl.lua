@@ -10,15 +10,31 @@ local function log(msg)
         print(msg)
     end
 end
+local ctr = 0
+local row = 25
+local function calcPadding(width)
+    -- Keep a counter of current width that resets for each row
+    if ctr == 0 then
+        ctr = 5
+        return ctr
+    end
+    ctr = ctr + width + 2
+    if ctr > 150 then
+        row = row + 30
+        ctr = 5
+    end
 
+
+    return ctr
+end
  DKTControlPanel = ISCollapsableWindow:derive("DKTControlPanel")
 -- Override createChildren to customize buttons
  function DKTControlPanel:createChildren()
     ISCollapsableWindow.createChildren(self)
     -- Hide close button 
-    if self.closeButton then
-        self.closeButton:setVisible(false)
-    end
+    -- if self.closeButton then
+    --     self.closeButton:setVisible(false)
+    -- end
 
     -- Configure collapse button for minimize/maximize
     if self.collapseButton then
@@ -36,11 +52,13 @@ end
 -- Define simple button props
     local buttonWidth = 25
     local buttonHeight = 25
-    local buttonX = (self.width - buttonWidth) /2
-    local buttonY = self:titleBarHeight() +20
+    local buttonX = 5
+    local buttonY = self:titleBarHeight() +5
     -- Create a new instance of ISButton 
-    self.testButton = ISButton:new(buttonX, buttonY, buttonWidth, buttonHeight, "RP", self, DKTControlPanel.onTestButtonClick)
-    self.printButton = ISButton:new(buttonX-105, buttonY, buttonWidth, buttonHeight, "Print Button", self, DKTControlPanel.onPrintButtonClick)
+    self.testButton = ISButton:new(calcPadding(buttonWidth), row, buttonWidth, buttonHeight, "RP", self, DKTControlPanel.onTestButtonClick)
+    self.printButton = ISButton:new(calcPadding(buttonWidth), row, buttonWidth, buttonHeight, "Print Button", self, DKTControlPanel.onPrintButtonClick)
+    self.WIPButton = ISButton:new(calcPadding(self.printButton.width), row, buttonWidth, buttonHeight, "Tester Button", self, DKTControlPanel.onTestButtonClick)
+    self.WIPButton2 = ISButton:new(calcPadding(self.WIPButton.width), row, buttonWidth, buttonHeight, "Tester Button 2", self, DKTControlPanel.onTestButtonClick)
 -- Configure button properties
 
     self.testButton:initialise()
@@ -66,6 +84,18 @@ end
     self.printButton.backgroundColorMouseOver = {r=0.3, g=0.3, b=0.3, a=1}
     
     self:addChild(self.printButton)
+
+    self.WIPButton:initialise()
+    self.WIPButton.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.WIPButton.backgroundColor = {r=0.2, g=0.2, b=0.2, a=1}
+    self.WIPButton.backgroundColorMouseOver = {r=0.3, g=0.3, b=0.3, a=1}
+    self:addChild(self.WIPButton)
+
+    self.WIPButton2:initialise()
+    self.WIPButton2.borderColor = {r=0.4, g=0.4, b=0.4, a=1}
+    self.WIPButton2.backgroundColor = {r=0.2, g=0.2, b=0.2, a=1}
+    self.WIPButton2.backgroundColorMouseOver = {r=0.3, g=0.3, b=0.3, a=1}
+    self:addChild(self.WIPButton2)
 end
 
 -- Button click function
@@ -127,6 +157,8 @@ function DKTControlPanel:collapse()
         self:clearMaxDrawHeight()
         self.testButton:setVisible(true)
         self.printButton:setVisible(true)
+        self.WIPButton:setVisible(true)
+        self.WIPButton2:setVisible(true)
         if self.pinButton then
             self.pinButton:setVisible(not self.pin)
         end
@@ -139,6 +171,8 @@ function DKTControlPanel:collapse()
         self:setMaxDrawHeight(self:titleBarHeight())
         self.testButton:setVisible(false)
         self.printButton:setVisible(false)
+        self.WIPButton:setVisible(false)
+        self.WIPButton2:setVisible(false)
         if self.pinButton then
             self.pinButton:setVisible(not self.pin)
         end
@@ -155,6 +189,8 @@ function DKTControlPanel:pin()
     self:clearMaxDrawHeight()
     self.testButton:setVisible(true)
     self.printButton:setVisible(true)
+    self.WIPButton:setVisible(true)
+    self.WIPButton2:setVisible(true)
     if self.collapseButton then
         self.collapseButton:setVisible(true)
     end
@@ -169,6 +205,8 @@ function DKTControlPanel:uncollapse()
     self:clearMaxDrawHeight()
     self.testButton:setVisible(true)
     self.printButton:setVisible(true)
+    self.WIPButton:setVisible(true)
+    self.WIPButton2:setVisible(true)
     if self.pinButton then
         self.pinButton:setVisible(not self.pin)
     end
