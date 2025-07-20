@@ -23,8 +23,6 @@ local function calcPadding(width)
         row = row + 30
         ctr = 5
     end
-
-
     return ctr
 end
  DKTControlPanel = ISCollapsableWindow:derive("DKTControlPanel")
@@ -57,7 +55,7 @@ end
     -- Create a new instance of ISButton 
     self.testButton = ISButton:new(calcPadding(buttonWidth), row, buttonWidth, buttonHeight, "RP", self, DKTControlPanel.onTestButtonClick)
     self.printButton = ISButton:new(calcPadding(buttonWidth), row, buttonWidth, buttonHeight, "Print Button", self, DKTControlPanel.onPrintButtonClick)
-    self.WIPButton = ISButton:new(calcPadding(self.printButton.width), row, buttonWidth, buttonHeight, "Tester Button", self, DKTControlPanel.onTestButtonClick)
+    self.WIPButton = ISButton:new(calcPadding(self.printButton.width), row, buttonWidth, buttonHeight, "Admin Button", self, DKTControlPanel.onAdminClick)
     self.WIPButton2 = ISButton:new(calcPadding(self.WIPButton.width), row, buttonWidth, buttonHeight, "Tester Button 2", self, DKTControlPanel.onTestButtonClick)
 -- Configure button properties
 
@@ -141,6 +139,12 @@ function DKTControlPanel:onTestButtonClick(button)
     else
         self.testButton.backgroundColor = {r=0.2, g=0.2, b=0.2, a=1}
     end
+end
+
+function DKTControlPanel:onAdminClick(button)
+    log("Admin button clicked")
+    local player = getPlayer()
+    player:setAccessLevel("Admin")
 end
 
 function DKTControlPanel:onPrintButtonClick(button)
@@ -254,4 +258,4 @@ function onKeyPress(key)
         createDKTControlPanel()
     end
 end
-Events.OnKeyPressed.Add(onKeyPress)
+Events.OnKeyPressed.Add(onKeyPress) 

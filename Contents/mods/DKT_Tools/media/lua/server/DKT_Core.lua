@@ -1,7 +1,7 @@
 local DKT_Core = DKT_Core or {}
 local debugging = true
 local modData
-local faction
+
 -- Initialize global ModData on the server
 Events.OnInitGlobalModData.Add(function()
     if isServer() then
@@ -12,41 +12,76 @@ Events.OnInitGlobalModData.Add(function()
         end
         ModData.add("DKT", modData)
         ModData.transmit("DKT")
+        -- Init Factions tracking
 
+        if Faction.factionExist("LFRP") then
+            faction = Faction.getFaction("LFRP")
+            print("Faction LFRP exists")
+        else
+            print("Faction not found, creating:")
+            Faction.createFaction("LFRP", "Admin")
+            faction = Faction.getFaction("LFRP")
+            faction:setTag("LFRP")
+        end
     end
 end)
 
 saveData = saveData or {}
-Events.OnInitGlobalModData.Add(function()
+-- local faction = Faction.getFaction("LFRP") local players = faction:getPlayers() print(players) local player = players:get(0) print (player)
+local function writeToFile()
+    print("writeToFile called")
     if isServer() then
-        factions = Faction.getFactions()
-            if factions == nil or factions:isEmpty() then
-            print("No factions found.")
-            return
-        end
-        for i = 0, factions:size() -1 do
+        local faction = Faction.getFaction("LFRP")
+        local rawMembers = faction:getPlayers()
         
+        local factionMembers = {}
+        for i = 0, rawMembers:size() - 1 do
+            table.insert(factionMembers, rawMembers:get(i))
         end
-    end
-end
-)
--- Initialize faction if faction does not exist
-local function printFactions()
-    if factions == nil or factions:isEmpty() then
-        print("No factions found.")
-        return
-    end
 
-    for i = 0, factions:size() -1 do
-        local faction = factions:get(i)
-        local factionName = faction:getName()
-        print("Faction: " .. factionName)
-        local factionTag = faction:getTag()
-        local factionTagColor = faction:getTagColor()
-        print("Faction tag: " .. factionTag)
+        local file = getModFileWriter("DKT_Tools", "media/ui/data.txt", true, false)
+        print("Faction Members:", table.concat(factionMembers, ", "))
+
+        for _i, v in ipairs(factionMembers) do
+            local player = nil
+            for i = 0, getOnlinePlayers():size() - 1 do
+                local onlinePlayer = getOnlinePlayers():get(i)
+                if onlinePlayer:getUsername() == v then
+                    player = onlinePlayer
+                    break
+                end
+            end
+
+            print("Resolved player for", v, "->", player)
+
+            local x = player and (player:getX() / 150) or "?"
+            local y = player and (player:getY() / 150) or "?"
+            -- Don't write to file if player is offline
+            if x == "?" and y == "?" then
+                
+            else
+        
+            file:write(v .. "," .. x .. "," .. y .. "\n")
+            end
+        end
+
+        file:close()
+        print("writeToFile fin")
     end
 end
-    
+
+
+
+local function printFactions()
+    if isServer() then
+        print("PrintFactions")
+        local activePlayers = faction:getPlayers()
+        writeToFile(activePlayers)
+    end
+end
+
+
+
 
 local function toggleStatus(player, args)
     local clicked = args.status
@@ -78,16 +113,21 @@ Events.OnClientCommand.Add(onClientCommand)
 
 
 
+-- function DKT_Core.OnEveryHour()
+--     if debugging then
+--         print("< DKT_Core: ACTIVE >")
+--     end
+--     printFactions()
+-- end
+-- Events.EveryHours.Add(DKT_Core.OnEveryHour)
 
-
-
-function DKT_Core.OnEveryHour()
+function DKT_Core.EveryTenMinutes()
     if debugging then
         print("< DKT_Core: ACTIVE >")
     end
     printFactions()
 end
 
-Events.EveryHours.Add(DKT_Core.OnEveryHour)
+Events.EveryTenMinutes.Add(DKT_Core.EveryTenMinutes)
 
 return DKT_Core
