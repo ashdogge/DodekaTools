@@ -6,14 +6,16 @@ local modData
 Events.OnInitGlobalModData.Add(function()
     if isServer() then
         -- Init modData
-        modData = ModData.getOrCreate("DKT")
+        modData = ModData.getOrCreate("DKT_Tools")
         if not modData.activePlayers then
             modData.activePlayers = {}
         end
-        ModData.add("DKT", modData)
-        ModData.transmit("DKT")
-        -- Init Factions tracking
 
+            modData.events = {"eventOne", "EventTwo"}
+
+        -- DKT_Tools has tables activePlayers and events
+        ModData.add("DKT_Tools", modData)
+        -- Init Factions tracking
         if Faction.factionExist("LFRP") then
             faction = Faction.getFaction("LFRP")
             print("Faction LFRP exists")
@@ -102,9 +104,11 @@ local function onClientCommand(module, command, player, args)
         if command == "toggleStatus" then
             print("Calling toggleStatus for player: " .. player:getDisplayName())
             toggleStatus(player, args)
-    elseif command == "printStatus" then
-        print("Calling printStatus for player: " .. player:getDisplayName())
+        elseif command == "printStatus" then
+            print("Calling printStatus for player: " .. player:getDisplayName())
             writeToFile(modData.activePlayers)
+        elseif command == "DKTEvent" then
+            print("Calling DKTEvent called by" .. player:getDisplayName())
         end
     end
 end
