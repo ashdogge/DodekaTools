@@ -56,7 +56,7 @@ end
     self.testButton = ISButton:new(calcPadding(buttonWidth), row, buttonWidth, buttonHeight, "RP", self, DKTControlPanel.onTestButtonClick)
     self.printButton = ISButton:new(calcPadding(buttonWidth), row, buttonWidth, buttonHeight, "Print Button", self, DKTControlPanel.onPrintButtonClick)
     self.WIPButton = ISButton:new(calcPadding(self.printButton.width), row, buttonWidth, buttonHeight, "Admin Button", self, DKTControlPanel.onAdminClick)
-    self.WIPButton2 = ISButton:new(calcPadding(self.WIPButton.width), row, buttonWidth, buttonHeight, "Tester Button 2", self, DKTControlPanel.onTestButtonClick)
+    self.WIPButton2 = ISButton:new(calcPadding(self.WIPButton.width), row, buttonWidth, buttonHeight, "Event Btn", self, DKTControlPanel.newEventClick)
 -- Configure button properties
 
     self.testButton:initialise()
@@ -151,6 +151,12 @@ function DKTControlPanel:onPrintButtonClick(button)
     log("Print button clicky")
     local player = getPlayer()
     sendClientCommand(player, "DKT_Tools", "printStatus", {})
+end
+local event = 0
+function DKTControlPanel:newEventClick(button)
+    local player = getPlayer()
+    event = event + 1
+    sendClientCommand(player, "DKT_Tools", "DKTNewEvent", {event})
 end
 
 -- Override collapse to handle minimize/maximize

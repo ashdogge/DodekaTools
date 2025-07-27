@@ -1,17 +1,18 @@
 local DKT_Core = DKT_Core or {}
 local debugging = true
 local modData
-
+modData = ModData.getOrCreate("DKT_Tools")
 -- Initialize global ModData on the server
 Events.OnInitGlobalModData.Add(function()
     if isServer() then
         -- Init modData
-        modData = ModData.getOrCreate("DKT_Tools")
+        -- modData = ModData.getOrCreate("DKT_Tools")
         if not modData.activePlayers then
             modData.activePlayers = {}
         end
-
-            modData.events = {"eventOne", "EventTwo"}
+            if not modData.events then
+            modData.events = {}
+            end
 
         -- DKT_Tools has tables activePlayers and events
         ModData.add("DKT_Tools", modData)
@@ -109,6 +110,11 @@ local function onClientCommand(module, command, player, args)
             writeToFile(modData.activePlayers)
         elseif command == "DKTEvent" then
             print("Calling DKTEvent called by" .. player:getDisplayName())
+        elseif command == "DKTNewEvent" then
+            print("DKTNewEvent called by " .. player:getDisplayName())
+            table.insert(modData.events, args[1])
+            ModData.add("DKT_Tools", modData)
+            ModData.transmit("DKT_Tools")
         end
     end
 end
