@@ -2,6 +2,7 @@ require("ISUI/ISPanel");
 require("ISUI/ISButton");
 require("ISUI/ISCollapsableWindow");
 require("DKT_Core")
+require("DKTEventForm")
 local debugging = true
 
 local function log(msg)
@@ -25,14 +26,14 @@ local function calcPadding(width)
     end
     return ctr
 end
- DKTControlPanel = ISCollapsableWindow:derive("DKTControlPanel")
+ 
+  
+ 
+
 -- Override createChildren to customize buttons
+DKTControlPanel = ISCollapsableWindow:derive("DKTControlPanel")
  function DKTControlPanel:createChildren()
     ISCollapsableWindow.createChildren(self)
-    -- Hide close button 
-    -- if self.closeButton then
-    --     self.closeButton:setVisible(false)
-    -- end
 
     -- Configure collapse button for minimize/maximize
     if self.collapseButton then
@@ -154,9 +155,7 @@ function DKTControlPanel:onPrintButtonClick(button)
 end
 local event = 0
 function DKTControlPanel:newEventClick(button)
-    local player = getPlayer()
-    event = event + 1
-    sendClientCommand(player, "DKT_Tools", "DKTNewEvent", {event})
+    DKTEventForm.test()
 end
 
 -- Override collapse to handle minimize/maximize
