@@ -68,6 +68,7 @@ function DKTEventForm:createChildren()
     self.closeButton.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
     self.closeButton.backgroundColorMouseOver = { r = 0.7, g = 0.3, b = 0.3, a = 1.0 }
     self:addChild(self.closeButton)
+    
 end
 
 function DKTEventForm:onTriggerClicked()
@@ -97,8 +98,8 @@ function DKTEventForm:onTriggerClicked()
     self:addChild(newEntry)
     local triggerWid = triggerName:getWidth()
     local triggerTypeWid = triggerType:getWidth()
-    triggerName:setX(triggerWid - 40)
-    triggerType:setX(triggerTypeWid - 45)
+    triggerName:setX((newEntry:getWidth() - triggerName:getWidth())/2)
+    triggerType:setX((newEntry:getWidth() - triggerType:getWidth())/2)
     table.insert(self.triggerEntries, newEntry)
 
     lastY = lastY + 70
