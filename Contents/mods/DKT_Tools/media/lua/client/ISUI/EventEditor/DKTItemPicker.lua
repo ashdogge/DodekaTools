@@ -1,25 +1,23 @@
-
-require("ISUI/ISButton");
-require("ISUI/ISCollapsableWindow");
+require("ISUI/ISPanel");
 require ("ISUI/ISTextEntryBox");
 require("ISUI/ISScrollingListBox")
-TestPanel = ISCollapsableWindow:derive("TestPanel")
+DKTItemPicker = ISPanel:derive("DKTItemPicker")
 
 local yPad = 25
 
-function TestPanel:populateItems()
+function DKTItemPicker:populateItems()
     
     local nitems = getAllItems()
     local size = nitems:size()
 
     for i = size-1, 0, -1 do
         local item = nitems:get(i)
-        table.insert(TestPanel.items, item)
+        table.insert(DKTItemPicker.items, item)
     end
 end
 
-function TestPanel:createChildren()
-    ISCollapsableWindow.createChildren(self)
+function DKTItemPicker:createChildren()
+    ISPanel.createChildren(self)
     
     local buttonW = (self:getWidth() - 45)
     local buttonH = 25
@@ -40,21 +38,17 @@ function TestPanel:createChildren()
     self:addChild(searchList)
     yPad = yPad + 35
 
-    local newButt = ISButton:new(25, yPad + searchList:getHeight() - 15, buttonW, buttonH, "Submit", self, self.onClicked )
-    newButt:initialise() 
-    self:addChild(newButt)
-
     self.populateItems()
     for i, item in ipairs(self.items) do
         searchList:addItem(item:getDisplayName())
     end
-
+    yPad = 25
     --     for i, entry in ipairs(self.triggerEntries) do
     --     table.insert(triggers, entry:getText())
     -- end
 end
 
-function TestPanel:onTextChange()
+function DKTItemPicker:onTextChange()
     self.searchString = self.searchBar:getText()
     self.searchList:clear() -- Clear the current list
     if self.searchString == "" then
@@ -74,14 +68,14 @@ function TestPanel:onTextChange()
 end
 
 
-function TestPanel:onClicked(button)
+function DKTItemPicker:onClicked(button)
     self.searchString = self.searchBar:getText()
 
 
 end 
 
-function TestPanel:new(x, y, width, height)
-    local o = ISCollapsableWindow:new(x, y, width, height)
+function DKTItemPicker:new(x, y, width, height)
+    local o = ISPanel:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
     o.title = "Test Panel :)"
@@ -92,11 +86,11 @@ function TestPanel:new(x, y, width, height)
     return o 
 end
 
-function createTestPanel()
+function createDKTItemPicker()
 
     local screenH = getCore():getScreenHeight()
     local screenW = getCore():getScreenWidth()
-    local panel = TestPanel:new((screenW / 4), (screenH / 4), (screenW / 2), (screenH/2))
+    local panel = DKTItemPicker:new((screenW / 4), (screenH / 4), (screenW / 2), (screenH/2))
 
     panel:initialise()
     
@@ -106,7 +100,7 @@ end
 
 function onKeyPress(key)
     if key == Keyboard.KEY_L then
-        createTestPanel()
+        createDKTItemPicker()
     end
 end
 Events.OnKeyPressed.Add(onKeyPress) 

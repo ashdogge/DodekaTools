@@ -3,16 +3,18 @@ require("ISUI/ISButton");
 require("ISUI/ISCollapsableWindow");
 require "ISUI/ISTextEntryBox"
 require "ISUI/ISComboBox"
+require("ISUI/ISPanel")
+require("DKTItemPicker")
+require("DKTTextEvent")
+require("ISLabel")
 DKTEventEditor = ISCollapsableWindow:derive("DKTEventEditor")
-
-local yPad = 25
 
 function DKTEventEditor:createChildren()
     ISCollapsableWindow.createChildren(self)
 
     local itemWidth = (self:getWidth() - 90)
     
-    self.effectSelector = ISComboBox:new(5, yPad, 150, 20, self, self.onEffectChange)
+    self.effectSelector = ISComboBox:new(5, 25, 150, 20, self, self.onEffectChange)
     
     self.effectSelector:initialise()
     self.effectSelector:instantiate()
@@ -21,7 +23,7 @@ function DKTEventEditor:createChildren()
     self.effectSelector:addOption("Display Text")
     self.effectSelector:addOption("Trigger Progression")
     self:addChild(self.effectSelector)
-    yPad = 25
+    self.lastY = self.lastY + 30
 
 
     -- local buttonW = (self:getWidth() - 50)
@@ -52,27 +54,23 @@ function DKTEventEditor:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
     o.title = "Test Panel :)"
-    o.strings = {"Ow!", "Stop!", "That hurts!", "Quit it!", "Enough!", "Stop that!"}
-    o.yPad = nil
-    o.textBox = nil
+    o.textPanel = nil
     o.itemSelector = nil
+    o.lastY = 30
     return o 
 end
 
 -- local eventType = self.typeOption:getOptionText(self.typeOption.selected)
 function DKTEventEditor:onEffectChange()
-
+    local panelW = self:getWidth()
+    local panelH = self:getHeight()
     local selected = self.effectSelector:getOptionText(self.effectSelector.selected)
-    
     if selected == "Spawn Item" then
         if self.itemMenu == nil then
-            self.itemMenu = ISTextEntryBox:new("Text to display here...", 5, yPad, 500, 300)
+            self.lastY = self.effectSelector:getY() + 25
+            self.itemMenu = DKTItemPicker:new(5, self.lastY, 500, 300)
             self.itemMenu:initialise()
             self:addChild(self.itemMenu)
-            self.itemMenu:setMultipleLine(true)
-            self.itemMenu:setMaxLines(50)
-            self.itemMenu:addScrollBars()
-            
         else
             self.itemMenu:setVisible(true)
         end
@@ -83,24 +81,55 @@ function DKTEventEditor:onEffectChange()
     end
 
 
-    -- Logic for displaying text above point
+    -- Logic for Display Text effect menu
     if selected == "Display Text" then
         if self.textBox == nil then
-            self.textBox = ISTextEntryBox:new("Text to display here...", 5, yPad, 500, 300)
-            self.textBox:initialise()
-            self:addChild(self.textBox)
-            self.textBox:setMultipleLine(true)
-            self.textBox:setMaxLines(50)
-            self.textBox:addScrollBars()
-            
+            self:createDisplayTextInput()
         else
-            self.textBox:setVisible(true)
+            self.textPanel:setVisible(true)
         end
     else
-        if self.textBox then
-            self.textBox:setVisible(false)
+        if self.textPanel then
+            self.textPanel:setVisible(false)
         end
     end
+end
+
+function DKTEventEditor:createDisplayTextInput()
+            local panelW = self:getWidth()
+            local panelH = self:getHeight()
+            self.textPanel = ISPanel:new(5, self.lastY, panelW - 10, panelH - 70 )
+            self.textPanel:initialise()
+            self.textPanel.yPad = 5
+            local yPad = self.textPanel.yPad
+            local panelLabel = ISLabel:new(5, yPad, 25, "Display Text", 1, 1, 1, 1, UIFont.Medium )
+            self.textPanel:addChild(panelLabel)
+            panelLabel:setX(5)
+            local delayLabel = ISLabel:new(5, yPad, 25, "Delay", 1, 1, 1, 1, UIFont.Medium)
+            self.textPanel:addChild(delayLabel)
+            yPad = yPad + 25
+
+            local textEntryBox = ISTextEntryBox:new("Something smells funny...", 5, yPad, panelW - 150, 20)
+            textEntryBox:initialise()
+            
+            local delayEntryBox = ISTextEntryBox:new("0", textEntryBox:getWidth()+10, yPad, 50, 20)
+            delayEntryBox:initialise()
+            self.textPanel:addChild(delayEntryBox)
+            delayLabel:setX(delayEntryBox:getX())
+
+            local textPlusButton = ISButton:new(delayEntryBox:getX() + 55, yPad, 20, 20, "+", self, self.onNewDisplayClick)
+            textPlusButton:initialise()
+            self.textPanel:addChild(textPlusButton)
+            yPad = yPad + textEntryBox:getHeight()
+            
+            self.textPanel:addChild(textEntryBox)
+            
+            self:addChild(self.textPanel)
+
+end
+
+function DKTEventEditor:onNewDisplayClick()
+    
 end
 function createDKTEventEditor()
 
