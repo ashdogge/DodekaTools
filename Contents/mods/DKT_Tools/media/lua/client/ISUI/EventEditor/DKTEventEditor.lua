@@ -57,6 +57,9 @@ function DKTEventEditor:new(x, y, width, height)
     o.textPanel = nil
     o.itemSelector = nil
     o.lastY = 30
+    o.textEvents = {}
+    o.buttonCount = 0
+
     return o 
 end
 
@@ -120,7 +123,7 @@ function DKTEventEditor:createDisplayTextInput()
             local textPlusButton = ISButton:new(delayEntryBox:getX() + 55, yPad, 20, 20, "+", self, self.onNewDisplayClick)
             textPlusButton:initialise()
             self.textPanel:addChild(textPlusButton)
-            yPad = yPad + textEntryBox:getHeight()
+            self.textPanel.yPad = yPad + 25
             
             self.textPanel:addChild(textEntryBox)
             
@@ -129,8 +132,35 @@ function DKTEventEditor:createDisplayTextInput()
 end
 
 function DKTEventEditor:onNewDisplayClick()
-    
+    local panelW = self:getWidth()
+    local panelH = self:getHeight()
+    local btnI = self.buttonCount + 1
+    local newTextEntryBox = ISTextEntryBox:new("Something smells funny...", 5, self.textPanel.yPad, panelW - 150, 20)
+    newTextEntryBox:initialise()
+    self.textPanel:addChild(newTextEntryBox)
+    local delayEntryBox = ISTextEntryBox:new("0", newTextEntryBox:getWidth()+10, self.textPanel.yPad, 50, 20)
+    delayEntryBox:initialise()
+    self.textPanel:addChild(delayEntryBox)
+    local entryPair = {newTextEntryBox, delayEntryBox}
+    local removeButt = ISButton:new(delayEntryBox:getX() + 55, self.textPanel.yPad, 20, 20, "-", self, self.onRemoveDisplayClick)
+    removeButt:initialise()
+    self.textPanel:addChild(removeButt)
+    table.insert(self.textEvents, entryPair)
+    self.textPanel.yPad = self.textPanel.yPad + 25
+
+    removeButt.set = {newTextEntryBox, delayEntryBox}
 end
+
+function DKTEventEditor:onRemoveDisplayClick(button)
+    -- TODO: Remove entry in textEvents and remove button and text box from display
+    local boxes = button.set
+    local par = button:getParent()
+    for k, v in ipairs(boxes) do
+        par:removeChild(v)
+    end
+    par:removeChild(button)
+end
+
 function createDKTEventEditor()
 
     local screenH = getCore():getScreenHeight()
