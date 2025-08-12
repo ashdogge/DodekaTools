@@ -7,9 +7,9 @@ require("ISUI/ISPanel")
 require("DKTItemPicker")
 require("DKTTextEvent")
 require("ISLabel")
-DKTEventEditor = ISCollapsableWindow:derive("DKTEventEditor")
+DKTEffectEditor = ISCollapsableWindow:derive("DKTEffectEditor")
 
-function DKTEventEditor:createChildren()
+function DKTEffectEditor:createChildren()
     ISCollapsableWindow.createChildren(self)
 
     local itemWidth = (self:getWidth() - 90)
@@ -25,35 +25,13 @@ function DKTEventEditor:createChildren()
     self:addChild(self.effectSelector)
     self.lastY = self.lastY + 30
 
-
-    -- local buttonW = (self:getWidth() - 50)
-    -- local buttonH = 25
-
-
-    -- for i = 1, 20 do
-    --     local newButt = ISButton:new(25, yPad, buttonW, buttonH, "=)", self, self.onClicked )
-    --     newButt:initialise()
-    --     self:addChild(newButt)
-    --     self:addScrollBars()
-    --     yPad = yPad + 35
-    -- end
-
-
 end
 
-function DKTEventEditor:onClicked(button)
-    local i = (ZombRand(6) + 1)
-    button.title = self.strings[i]
-    print("I'm just a funny little guy")
-
-end 
-
-function DKTEventEditor:new(x, y, width, height)
-
+function DKTEffectEditor:new(x, y, width, height)
     local o = ISCollapsableWindow:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
-    o.title = "Test Panel :)"
+    o.title = "Effect Editor"
     o.textPanel = nil
     o.itemSelector = nil
     o.lastY = 30
@@ -63,8 +41,7 @@ function DKTEventEditor:new(x, y, width, height)
     return o 
 end
 
--- local eventType = self.typeOption:getOptionText(self.typeOption.selected)
-function DKTEventEditor:onEffectChange()
+function DKTEffectEditor:onEffectChange()
     local panelW = self:getWidth()
     local panelH = self:getHeight()
     local selected = self.effectSelector:getOptionText(self.effectSelector.selected)
@@ -94,11 +71,13 @@ function DKTEventEditor:onEffectChange()
     else
         if self.textPanel then
             self.textPanel:setVisible(false)
+            
         end
     end
 end
 
-function DKTEventEditor:createDisplayTextInput()
+function DKTEffectEditor:createDisplayTextInput()
+    -- TODO: Move to its own file
             local panelW = self:getWidth()
             local panelH = self:getHeight()
             self.textPanel = ISPanel:new(5, self.lastY, panelW - 10, panelH - 70 )
@@ -112,7 +91,7 @@ function DKTEventEditor:createDisplayTextInput()
             self.textPanel:addChild(delayLabel)
             yPad = yPad + 25
 
-            local textEntryBox = ISTextEntryBox:new("Something smells funny...", 5, yPad, panelW - 150, 20)
+            local textEntryBox = ISTextEntryBox:new("Something smells funny...", 5, yPad, panelW - 100, 20)
             textEntryBox:initialise()
             
             local delayEntryBox = ISTextEntryBox:new("0", textEntryBox:getWidth()+10, yPad, 50, 20)
@@ -127,13 +106,17 @@ function DKTEventEditor:createDisplayTextInput()
             self.textPanel:addChild(textPlusButton)
             self.textPanel.yPad = yPad + 25
             
+            local textSubmitButton = ISButton:new(panelW -70, 5, 55, 30, "Submit", self, self.onSubmitClicked)
+            textSubmitButton:initialise()
+            self.textPanel:addChild(textSubmitButton)
+            textSubmitButton:setY(panelH - 105)
             self.textPanel:addChild(textEntryBox)
             
             self:addChild(self.textPanel)
 
 end
 
-function DKTEventEditor:onNewDisplayClick()
+function DKTEffectEditor:onNewDisplayClick()
     local panelW = self:getWidth()
     local panelH = self:getHeight()
     self.buttonCount = self.buttonCount or 0 -- Initialize if not set
@@ -141,7 +124,7 @@ function DKTEventEditor:onNewDisplayClick()
     self.textPanel.yPad = self.textPanel.yPad or 5 -- Initialize if not set
 
     -- Text box
-    local newTextEntryBox = ISTextEntryBox:new("Something smells funny...", 5, self.textPanel.yPad, panelW - 150, 20)
+    local newTextEntryBox = ISTextEntryBox:new("Something smells funny...", 5, self.textPanel.yPad, panelW - 100, 20)
     newTextEntryBox:initialise()
     self.textPanel:addChild(newTextEntryBox)
 
@@ -163,7 +146,9 @@ function DKTEventEditor:onNewDisplayClick()
     removeButt.set = {newTextEntryBox, delayEntryBox}
 end
 
-function DKTEventEditor:onRemoveDisplayClick(button)
+
+
+function DKTEffectEditor:onRemoveDisplayClick(button)
     local boxes = button.set
     local par = button:getParent()
 
@@ -184,7 +169,7 @@ function DKTEventEditor:onRemoveDisplayClick(button)
     end
 
     -- Reposition remaining elements
-    local ypad = 55 -- Start at initial yPad (adjust if different in createDisplayTextInput)
+    local ypad = 55 
     for _, entrySet in ipairs(self.textEvents) do
         for k, v in ipairs(entrySet) do
             v:setY(ypad)
@@ -194,11 +179,11 @@ function DKTEventEditor:onRemoveDisplayClick(button)
     self.textPanel.yPad = ypad -- Update yPad to the new bottom position
 end
 
-function createDKTEventEditor()
+function createDKTEffectEditor()
 
     local screenH = getCore():getScreenHeight()
     local screenW = getCore():getScreenWidth()
-    local panel = DKTEventEditor:new((screenW / 4), (screenH / 4), (screenW / 2), (screenH/2))
+    local panel = DKTEffectEditor:new((screenW / 4), (screenH / 4), (screenW / 2), (screenH/2))
 
     panel:initialise()
     
@@ -208,7 +193,7 @@ end
 
 function onKeyPress(key)
     if key == Keyboard.KEY_I then
-        createDKTEventEditor()
+        createDKTEffectEditor()
     end
 end
 Events.OnKeyPressed.Add(onKeyPress) 
