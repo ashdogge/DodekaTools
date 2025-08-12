@@ -1,21 +1,20 @@
 
 require("ISUI/ISButton");
-require("ISUI/ISCollapsableWindow");
+require("ISUI/ISPanel");
 require "ISUI/ISTextEntryBox"
 require "ISUI/ISComboBox"
 require("ISUI/ISPanel")
 require("DKTItemPicker")
 require("DKTTextEvent")
 require("ISLabel")
-DKTEffectEditor = ISCollapsableWindow:derive("DKTEffectEditor")
+DKTEffectEditor = ISPanel:derive("DKTEffectEditor")
 
 function DKTEffectEditor:createChildren()
-    ISCollapsableWindow.createChildren(self)
+    ISPanel.createChildren(self)
 
     local itemWidth = (self:getWidth() - 90)
     
     self.effectSelector = ISComboBox:new(5, 25, 150, 20, self, self.onEffectChange)
-    
     self.effectSelector:initialise()
     self.effectSelector:instantiate()
     self.effectSelector:addOption("Spawn Item")
@@ -23,22 +22,37 @@ function DKTEffectEditor:createChildren()
     self.effectSelector:addOption("Display Text")
     self.effectSelector:addOption("Trigger Progression")
     self:addChild(self.effectSelector)
+
+
+    self.cancel = ISButton:new(self.width - 60, 10, 50, 25, "Cancel", self, self.onClose)
+    self.cancel:initialise()
+    self.cancel.backgroundColor = { r = 0.5, g = 0.2, b = 0.2, a = 1.0 }
+    self.cancel.borderColor = { r = 0.4, g = 0.4, b = 0.4, a = 1 }
+    self.cancel.backgroundColorMouseOver = { r = 0.7, g = 0.3, b = 0.3, a = 1.0 }
+    self:addChild(self.cancel)
+
     self.lastY = self.lastY + 30
 
 end
 
 function DKTEffectEditor:new(x, y, width, height)
-    local o = ISCollapsableWindow:new(x, y, width, height)
+    local o = ISPanel:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
-    o.title = "Effect Editor"
+    o.title = "DKT Effect Editor"
     o.textPanel = nil
     o.itemSelector = nil
     o.lastY = 30
     o.textEvents = {}
     o.buttonCount = 0
-
+    o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.8 }
+    o.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
+    o.cancel = nil
     return o 
+end
+
+function DKTEffectEditor:onClose()        
+    self:removeFromUIManager()
 end
 
 function DKTEffectEditor:onEffectChange()
@@ -121,6 +135,9 @@ function DKTEffectEditor:onNewDisplayClick()
     local panelH = self:getHeight()
     self.buttonCount = self.buttonCount or 0 -- Initialize if not set
     self.buttonCount = self.buttonCount + 1
+    if self.buttonCount > 13 then
+        return
+    end
     self.textPanel.yPad = self.textPanel.yPad or 5 -- Initialize if not set
 
     -- Text box

@@ -4,8 +4,9 @@ require "ISUI/ISButton"
 require "ISUI/ISComboBox"
 require "ISUI/ISScrollBar"
 require "ISUI/ISLabel"
+require("DKTEventEditor")
 DKTEventForm = ISPanel:derive("DKTEventForm")
-
+-- TODO: Fix label placement to allow clicking an event 
 function DKTEventForm:new(width, height)
     local o = ISPanel:new(0, 0, width, height)
     setmetatable(o, self)
@@ -21,6 +22,7 @@ function DKTEventForm:new(width, height)
     o.submitButton = nil
     o.labelY = 50 -- Instance-specific labelY
     o.maxHeight = getCore():getScreenHeight() * 0.9 -- Max visible height
+    o.panelInstance = nil
     return o
 end
 
@@ -153,8 +155,21 @@ end
 function DKTEventForm:onDeleteTriggerClicked()
     print(":)")
 end
-function DKTEventForm:onEventClicked()
-    print(":)")
+function DKTEventForm:onEventClicked(button)
+    if self.panelInstance then 
+        local panel = self.panelInstance
+        panel:removeFromUIManager()
+        self.panelInstance = nil
+    end
+    local screenH = getCore():getScreenHeight()
+    local screenW = getCore():getScreenWidth()
+    local panel = DKTEffectEditor:new((screenW / 4), (screenH / 4), (screenW / 2), (screenH/2))
+
+    panel:initialise()
+    
+    panel:addToUIManager()
+    self.panelInstance = panel
+
 end
 
 function DKTEventForm:onSubmit()
@@ -211,7 +226,7 @@ function DKTEventForm.test()
     local height = 210
     local screenW = getCore():getScreenWidth()
     local screenH = getCore():getScreenHeight()
-    local width = screenW * 0.9
+    local width = screenW / 1.5
     local x = (screenW - width) / 2
     local y = (screenH - height) / 2
 
