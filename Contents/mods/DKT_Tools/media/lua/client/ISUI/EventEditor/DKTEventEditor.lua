@@ -118,6 +118,8 @@ function DKTEventEditor:createDisplayTextInput()
             local delayEntryBox = ISTextEntryBox:new("0", textEntryBox:getWidth()+10, yPad, 50, 20)
             delayEntryBox:initialise()
             self.textPanel:addChild(delayEntryBox)
+            delayEntryBox:setOnlyNumbers(true)
+            delayEntryBox:setMaxTextLength(4)
             delayLabel:setX(delayEntryBox:getX())
 
             local textPlusButton = ISButton:new(delayEntryBox:getX() + 55, yPad, 20, 20, "+", self, self.onNewDisplayClick)
@@ -134,31 +136,62 @@ end
 function DKTEventEditor:onNewDisplayClick()
     local panelW = self:getWidth()
     local panelH = self:getHeight()
-    local btnI = self.buttonCount + 1
+    self.buttonCount = self.buttonCount or 0 -- Initialize if not set
+    self.buttonCount = self.buttonCount + 1
+    self.textPanel.yPad = self.textPanel.yPad or 5 -- Initialize if not set
+
+    -- Text box
     local newTextEntryBox = ISTextEntryBox:new("Something smells funny...", 5, self.textPanel.yPad, panelW - 150, 20)
     newTextEntryBox:initialise()
     self.textPanel:addChild(newTextEntryBox)
-    local delayEntryBox = ISTextEntryBox:new("0", newTextEntryBox:getWidth()+10, self.textPanel.yPad, 50, 20)
+
+    -- Delay counter
+    local delayEntryBox = ISTextEntryBox:new("0", newTextEntryBox:getWidth() + 10, self.textPanel.yPad, 50, 20)
     delayEntryBox:initialise()
     self.textPanel:addChild(delayEntryBox)
-    local entryPair = {newTextEntryBox, delayEntryBox}
+    delayEntryBox:setOnlyNumbers(true)
+    delayEntryBox:setMaxTextLength(4)
+    -- "-"" button to remove a line
     local removeButt = ISButton:new(delayEntryBox:getX() + 55, self.textPanel.yPad, 20, 20, "-", self, self.onRemoveDisplayClick)
     removeButt:initialise()
     self.textPanel:addChild(removeButt)
-    table.insert(self.textEvents, entryPair)
+
+    local entrySet = {newTextEntryBox, delayEntryBox, removeButt}
+    table.insert(self.textEvents, entrySet)
     self.textPanel.yPad = self.textPanel.yPad + 25
 
     removeButt.set = {newTextEntryBox, delayEntryBox}
 end
 
 function DKTEventEditor:onRemoveDisplayClick(button)
-    -- TODO: Remove entry in textEvents and remove button and text box from display
     local boxes = button.set
     local par = button:getParent()
+
+    -- Remove the text and delay entry boxes from the parent panel
     for k, v in ipairs(boxes) do
         par:removeChild(v)
     end
+    -- Remove the button itself
     par:removeChild(button)
+
+    -- Remove the entrySet from self.textEvents and update buttonCount
+    for i, entrySet in ipairs(self.textEvents) do
+        if entrySet[1] == boxes[1] and entrySet[2] == boxes[2] then
+            table.remove(self.textEvents, i)
+            self.buttonCount = self.buttonCount - 1
+            break -- Exit loop after removal to avoid index issues
+        end
+    end
+
+    -- Reposition remaining elements
+    local ypad = 55 -- Start at initial yPad (adjust if different in createDisplayTextInput)
+    for _, entrySet in ipairs(self.textEvents) do
+        for k, v in ipairs(entrySet) do
+            v:setY(ypad)
+        end
+        ypad = ypad + 25
+    end
+    self.textPanel.yPad = ypad -- Update yPad to the new bottom position
 end
 
 function createDKTEventEditor()
