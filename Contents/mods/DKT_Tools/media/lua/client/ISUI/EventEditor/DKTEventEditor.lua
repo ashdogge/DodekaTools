@@ -6,7 +6,8 @@ require "ISUI/ISComboBox"
 require("ISUI/ISPanel")
 require("DKTItemPicker")
 require("DKTTextEvent")
-require("ISLabel")
+require("DKTTextEventPanel")
+require("ISUI/ISLabel")
 DKTEffectEditor = ISPanel:derive("DKTEffectEditor")
 
 function DKTEffectEditor:createChildren()
@@ -94,38 +95,37 @@ function DKTEffectEditor:createDisplayTextInput()
     -- TODO: Move to its own file
             local panelW = self:getWidth()
             local panelH = self:getHeight()
-            self.textPanel = ISPanel:new(5, self.lastY, panelW - 10, panelH - 70 )
-            self.textPanel:initialise()
-            self.textPanel.yPad = 5
-            local yPad = self.textPanel.yPad
-            local panelLabel = ISLabel:new(5, yPad, 25, "Display Text", 1, 1, 1, 1, UIFont.Medium )
-            self.textPanel:addChild(panelLabel)
-            panelLabel:setX(5)
-            local delayLabel = ISLabel:new(5, yPad, 25, "Delay", 1, 1, 1, 1, UIFont.Medium)
-            self.textPanel:addChild(delayLabel)
-            yPad = yPad + 25
+            self.textPanel = DKTTextEventPanel:new(5, self.lastY, panelW - 10, panelH - 70 )
+            -- self.textPanel:initialise()
+            -- self.textPanel.yPad = 5
+            -- local yPad = self.textPanel.yPad
+            -- local panelLabel = ISLabel:new(5, yPad, 25, "Display Text", 1, 1, 1, 1, UIFont.Medium )
+            -- self.textPanel:addChild(panelLabel)
+            -- panelLabel:setX(5)
+            -- local delayLabel = ISLabel:new(5, yPad, 25, "Delay", 1, 1, 1, 1, UIFont.Medium)
+            -- self.textPanel:addChild(delayLabel)
+            -- yPad = yPad + 25
 
-            local textEntryBox = ISTextEntryBox:new("Something smells funny...", 5, yPad, panelW - 100, 20)
-            textEntryBox:initialise()
+            -- local textEntryBox = ISTextEntryBox:new("Something smells funny...", 5, yPad, panelW - 100, 20)
+            -- textEntryBox:initialise()
             
-            local delayEntryBox = ISTextEntryBox:new("0", textEntryBox:getWidth()+10, yPad, 50, 20)
-            delayEntryBox:initialise()
-            self.textPanel:addChild(delayEntryBox)
-            delayEntryBox:setOnlyNumbers(true)
-            delayEntryBox:setMaxTextLength(4)
-            delayLabel:setX(delayEntryBox:getX())
+            -- local delayEntryBox = ISTextEntryBox:new("0", textEntryBox:getWidth()+10, yPad, 50, 20)
+            -- delayEntryBox:initialise()
+            -- self.textPanel:addChild(delayEntryBox)
+            -- delayEntryBox:setOnlyNumbers(true)
+            -- delayEntryBox:setMaxTextLength(4)
 
-            local textPlusButton = ISButton:new(delayEntryBox:getX() + 55, yPad, 20, 20, "+", self, self.onNewDisplayClick)
-            textPlusButton:initialise()
-            self.textPanel:addChild(textPlusButton)
-            self.textPanel.yPad = yPad + 25
+            -- local textPlusButton = ISButton:new(delayEntryBox:getX() + 55, yPad, 20, 20, "+", self, self.onNewDisplayClick)
+            -- textPlusButton:initialise()
+            -- self.textPanel:addChild(textPlusButton)
+            -- self.textPanel.yPad = yPad + 25
             
-            local textSubmitButton = ISButton:new(panelW -70, 5, 55, 30, "Submit", self, self.onSubmitClicked)
-            textSubmitButton:initialise()
-            self.textPanel:addChild(textSubmitButton)
-            textSubmitButton:setY(panelH - 105)
-            self.textPanel:addChild(textEntryBox)
-            
+            -- local textSubmitButton = ISButton:new(panelW -70, 5, 55, 30, "Submit", self, self.onSubmitClicked)
+            -- textSubmitButton:initialise()
+            -- self.textPanel:addChild(textSubmitButton)
+            -- textSubmitButton:setY(panelH - 105)
+            -- self.textPanel:addChild(textEntryBox)
+
             self:addChild(self.textPanel)
 
 end
@@ -160,7 +160,7 @@ function DKTEffectEditor:onNewDisplayClick()
     table.insert(self.textEvents, entrySet)
     self.textPanel.yPad = self.textPanel.yPad + 25
 
-    removeButt.set = {newTextEntryBox, delayEntryBox}
+
 end
 
 
