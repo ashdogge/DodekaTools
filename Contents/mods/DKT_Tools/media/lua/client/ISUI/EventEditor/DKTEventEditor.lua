@@ -165,36 +165,7 @@ end
 
 
 
-function DKTEffectEditor:onRemoveDisplayClick(button)
-    local boxes = button.set
-    local par = button:getParent()
 
-    -- Remove the text and delay entry boxes from the parent panel
-    for k, v in ipairs(boxes) do
-        par:removeChild(v)
-    end
-    -- Remove the button itself
-    par:removeChild(button)
-
-    -- Remove the entrySet from self.textEvents and update buttonCount
-    for i, entrySet in ipairs(self.textEvents) do
-        if entrySet[1] == boxes[1] and entrySet[2] == boxes[2] then
-            table.remove(self.textEvents, i)
-            self.buttonCount = self.buttonCount - 1
-            break -- Exit loop after removal to avoid index issues
-        end
-    end
-
-    -- Reposition remaining elements
-    local ypad = 55 
-    for _, entrySet in ipairs(self.textEvents) do
-        for k, v in ipairs(entrySet) do
-            v:setY(ypad)
-        end
-        ypad = ypad + 25
-    end
-    self.textPanel.yPad = ypad -- Update yPad to the new bottom position
-end
 
 function createDKTEffectEditor()
 

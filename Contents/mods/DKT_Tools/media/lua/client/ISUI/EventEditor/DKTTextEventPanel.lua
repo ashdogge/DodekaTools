@@ -17,6 +17,7 @@ function DKTTextEventPanel:createChildren()
         self:addChild(self.delayLabel)
         self.yPad = self.yPad + 25
         self:buildSet()
+        
 end
 
 function DKTTextEventPanel:new(x, y, width, height)
@@ -35,7 +36,6 @@ end
  
 
 function DKTTextEventPanel:buildSet()
-
     self.count = self.count or 0 -- Initialize if not set
     self.count = self.count + 1
     if self.count > 13 then
@@ -62,15 +62,46 @@ function DKTTextEventPanel:buildSet()
         self:addChild(textPlusButton)
 
         local set = {textEntryBox, delayEntryBox, textPlusButton}
-            table.insert(self.textEvents, set)
-
+        textPlusButton.set = set -- Assign set to the button
+        table.insert(self.textEvents, set)
     else
         local removeButt = ISButton:new(delayEntryBox:getX() + 55, yPad, 20, 20, "-", self, self.onRemoveDisplayClick)
         removeButt:initialise()
         self:addChild(removeButt)
         local set = {textEntryBox, delayEntryBox, removeButt}
-            table.insert(self.textEvents, set)
-
+        removeButt.set = set -- Assign set to the button
+        table.insert(self.textEvents, set)
     end
     self.yPad = yPad + 25
+end
+
+function DKTTextEventPanel:onRemoveDisplayClick(button)
+    local boxes = button.set
+    local par = button:getParent()
+
+    -- Remove the text and delay entry boxes from the parent panel
+    for k, v in ipairs(boxes) do
+        par:removeChild(v)
+    end
+    -- Remove the button itself
+    par:removeChild(button)
+
+    -- Remove the entrySet from self.textEvents and update buttonCount
+    for i, entrySet in ipairs(self.textEvents) do
+        if entrySet[1] == boxes[1] and entrySet[2] == boxes[2] then
+            table.remove(self.textEvents, i)
+            self.count = self.count - 1
+            break -- Exit loop after removal to avoid index issues
+        end
+    end
+
+    -- Reposition remaining elements
+    local ypad = 30
+    for _, entrySet in ipairs(self.textEvents) do
+        for k, v in ipairs(entrySet) do
+            v:setY(ypad)
+        end
+        ypad = ypad + 25
+    end
+    self.yPad = ypad -- Update yPad to the new bottom position
 end
