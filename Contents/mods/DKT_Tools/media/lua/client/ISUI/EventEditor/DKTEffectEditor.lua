@@ -6,7 +6,7 @@ require "ISUI/ISComboBox"
 require("ISUI/ISPanel")
 require("DKTItemPicker")
 require("DKTTextEvent")
-require("DKTTextEventPanel")
+require("DKTTextEffectPanel")
 require("ISUI/ISLabel")
 DKTEffectEditor = ISPanel:derive("DKTEffectEditor")
 
@@ -24,6 +24,12 @@ function DKTEffectEditor:createChildren()
     self.effectSelector:addOption("Trigger Progression")
     self:addChild(self.effectSelector)
 
+    self.effectName = ISTextEntryBox:new("Effect name...", 160, 25, 300, 20)
+    self.effectName:initialise()
+    self.effectName:instantiate()
+    self:addChild(self.effectName)
+
+    self.effectName:setMaxTextLength(15)
 
     self.cancel = ISButton:new(self.width - 60, 10, 50, 25, "Cancel", self, self.onClose)
     self.cancel:initialise()
@@ -36,7 +42,7 @@ function DKTEffectEditor:createChildren()
 
 end
 
-function DKTEffectEditor:new(x, y, width, height)
+function DKTEffectEditor:new(x, y, width, height, button)
     local o = ISPanel:new(x, y, width, height)
     setmetatable(o, self)
     self.__index = self
@@ -49,6 +55,9 @@ function DKTEffectEditor:new(x, y, width, height)
     o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.8 }
     o.borderColor = { r = 1, g = 1, b = 1, a = 0.5 }
     o.cancel = nil
+    o.triggerButton = button
+    o.effectName = nil
+    print(self.triggerButton)
     return o 
 end
 
@@ -95,40 +104,10 @@ function DKTEffectEditor:createDisplayTextInput()
     -- TODO: Move to its own file
             local panelW = self:getWidth()
             local panelH = self:getHeight()
-            self.textPanel = DKTTextEventPanel:new(5, self.lastY, panelW - 10, panelH - 70 )
-            -- self.textPanel:initialise()
-            -- self.textPanel.yPad = 5
-            -- local yPad = self.textPanel.yPad
-            -- local panelLabel = ISLabel:new(5, yPad, 25, "Display Text", 1, 1, 1, 1, UIFont.Medium )
-            -- self.textPanel:addChild(panelLabel)
-            -- panelLabel:setX(5)
-            -- local delayLabel = ISLabel:new(5, yPad, 25, "Delay", 1, 1, 1, 1, UIFont.Medium)
-            -- self.textPanel:addChild(delayLabel)
-            -- yPad = yPad + 25
-
-            -- local textEntryBox = ISTextEntryBox:new("Something smells funny...", 5, yPad, panelW - 100, 20)
-            -- textEntryBox:initialise()
-            
-            -- local delayEntryBox = ISTextEntryBox:new("0", textEntryBox:getWidth()+10, yPad, 50, 20)
-            -- delayEntryBox:initialise()
-            -- self.textPanel:addChild(delayEntryBox)
-            -- delayEntryBox:setOnlyNumbers(true)
-            -- delayEntryBox:setMaxTextLength(4)
-
-            -- local textPlusButton = ISButton:new(delayEntryBox:getX() + 55, yPad, 20, 20, "+", self, self.onNewDisplayClick)
-            -- textPlusButton:initialise()
-            -- self.textPanel:addChild(textPlusButton)
-            -- self.textPanel.yPad = yPad + 25
-            
-            -- local textSubmitButton = ISButton:new(panelW -70, 5, 55, 30, "Submit", self, self.onSubmitClicked)
-            -- textSubmitButton:initialise()
-            -- self.textPanel:addChild(textSubmitButton)
-            -- textSubmitButton:setY(panelH - 105)
-            -- self.textPanel:addChild(textEntryBox)
-
+            self.textPanel = DKTTextEffectPanel:new(5, self.lastY, panelW - 10, panelH - 70, self.triggerButton )
             self:addChild(self.textPanel)
 
-end
+end 
 
 function DKTEffectEditor:onNewDisplayClick()
     local panelW = self:getWidth()

@@ -4,7 +4,7 @@ require "ISUI/ISButton"
 require "ISUI/ISComboBox"
 require "ISUI/ISScrollBar"
 require "ISUI/ISLabel"
-require("DKTEventEditor")
+require("DKTEffectEditor")
 DKTEventForm = ISPanel:derive("DKTEventForm")
 -- TODO: Fix label placement to allow clicking an event 
 function DKTEventForm:new(width, height)
@@ -87,6 +87,7 @@ function DKTEventForm:onTriggerClicked()
     newEntry:initialise()
         local triggerName = ISLabel:new(75, 5, 20, "New Trigger...", 1, 1, 1, 1, UIFont.Small )
         triggerName:initialise()
+        newEntry.effect = nil --Initialize as empty
         newEntry:addChild(triggerName)
         local triggerType = ISLabel:new(75, 25, 20, "Type: TODO", 1, 1, 1, 1, UIFont.Small )
         triggerType:initialise()
@@ -95,13 +96,15 @@ function DKTEventForm:onTriggerClicked()
         triggerDelete:initialise()
         newEntry:addChild(triggerDelete)
 
-    -- function ISLabel:new (x, y, height, name, r, g, b, a, font, bLeft)
+        newEntry.triggerName = triggerName
+        newEntry.triggerType = triggerType
 
     self:addChild(newEntry)
     local triggerWid = triggerName:getWidth()
     local triggerTypeWid = triggerType:getWidth()
     triggerName:setX((newEntry:getWidth() - triggerName:getWidth())/2)
     triggerType:setX((newEntry:getWidth() - triggerType:getWidth())/2)
+
     table.insert(self.triggerEntries, newEntry)
 
     lastY = lastY + 70
@@ -114,40 +117,6 @@ function DKTEventForm:onTriggerClicked()
         self:setY(self:getY() + 100) 
     end
     self:setHeight(newHeight)
-
-    -- local lastY = self.triggers:getY()
-    -- if #self.triggerEntries > 0 then
-    --     lastY = self.triggerEntries[#self.triggerEntries]:getY() + 30
-    -- end
-
-
-    -- -- Add two new text entry boxes
-
-
-    -- local pair = {}
-    -- for i = 1, 2 do
-    --     local newEntry = ISTextEntryBox:new("", 80, lastY, 150, 20)
-    --     newEntry:initialise()
-    --     newEntry:instantiate()
-    --     self:addChild(newEntry)
-    --     table.insert(self.triggerEntries, newEntry)
-    --     table.insert(pair, newEntry)
-    --     lastY = lastY + 30
-    -- end
-    -- table.insert(self.triggerPairs, pair)
-
-    -- -- Move trigger and submit buttons below new text boxes
-    -- -- self.triggers:setY(lastY)
-    -- lastY = lastY + 30
-    -- self.submitButton:setY(lastY)
-
-    -- local newHeight = lastY + 50 -- Extra padding
-    -- local screenH = getCore():getScreenHeight()
-
-    -- if self:getY() > (screenH * 0.8) then
-    --     self:setY(self:getY() + 80) 
-    -- end
-    -- self:setHeight(newHeight)
 
 
     print("Added two trigger text boxes")
@@ -163,10 +132,13 @@ function DKTEventForm:onEventClicked(button)
     end
     local screenH = getCore():getScreenHeight()
     local screenW = getCore():getScreenWidth()
-    local panel = DKTEffectEditor:new((screenW / 4), (screenH / 4), (screenW / 2), (screenH/2))
+    local panel = DKTEffectEditor:new((screenW / 4), (screenH / 4), (screenW / 2), (screenH/2), button)
 
     panel:initialise()
     
+    panel.triggerButton = button -- Store reference to the clicked trigger button
+    -- panel.eventForm = self -- Store reference to the event form
+
     panel:addToUIManager()
     self.panelInstance = panel
 
