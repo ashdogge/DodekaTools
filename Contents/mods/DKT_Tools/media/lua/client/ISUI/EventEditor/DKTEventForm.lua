@@ -106,6 +106,7 @@ function DKTEventForm:onTriggerClicked()
     triggerType:setX((newEntry:getWidth() - triggerType:getWidth())/2)
 
     table.insert(self.triggerEntries, newEntry)
+    
 
     lastY = lastY + 70
 
@@ -145,15 +146,18 @@ function DKTEventForm:onEventClicked(button)
 end
 
 function DKTEventForm:onSubmit()
-    if not isClient() then
-        return
-    end
+    -- if not isClient() then
+    --     return
+    -- end
     local player = getPlayer()
     local name = self.nameEntry:getText()
     local eventType = self.typeOption:getOptionText(self.typeOption.selected)
     local triggers = {}
     for i, entry in ipairs(self.triggerEntries) do
-        table.insert(triggers, entry:getText())
+        local entryName = entry.triggerName:getText() -- Showing up as nil, fix this
+        local entryType = entry.triggerType
+        local newEntry = {entryName, entryType}
+        table.insert(triggers, newEntry)
     end
 
     local event = { name = name, type = eventType, triggers = triggers, tag = "TestTag" }
