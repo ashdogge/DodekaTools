@@ -1,7 +1,5 @@
 version=1
-title=UnnamedShleysMod
-description=
-description=
+title=DKTools
 description=DKT and associated modules.
 tags=
 visibility=private
